@@ -3,14 +3,17 @@ package org.example.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.Objects;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "salary"}))
 public class Job {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "ID_GENERATOR")
     private Long id;
 
     @Column(nullable = false, length = 50)
@@ -48,9 +51,21 @@ public class Job {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || ((obj != null) &&
-                (obj.getClass() == Job.class) &&
-                ((Job) obj).name.equalsIgnoreCase(name) &&
-                ((Job) obj).salary == salary);
+        return this == obj || ((obj instanceof Job) &&
+                ((Job) obj).getName().equalsIgnoreCase(getName()) &&
+                ((Job) obj).getSalary() == getSalary());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName().hashCode(), getSalary());
+    }
+
+    @Override
+    public String toString() {
+        return "Job{" +
+                "name='" + name + '\'' +
+                ", salary=" + salary +
+                '}';
     }
 }

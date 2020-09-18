@@ -9,8 +9,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(
+        columnNames = {
+                "name", "surname", "age", "job_id"
+        }))
 public class User {
 
     @Id
@@ -65,11 +73,35 @@ public class User {
         this.age = age;
     }
 
-    public Job getJob() {
-        return job;
+    public Optional<Job> getJob() {
+        return Optional.ofNullable(job);
     }
 
     public void setJob(Job job) {
         this.job = job;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || (obj instanceof User &&
+                ((User) obj).name.equalsIgnoreCase(name) &&
+                ((User) obj).surname.equalsIgnoreCase(surname) &&
+                ((User) obj).age == age &&
+                Objects.equals(job, ((User) obj).job));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, surname, age, job);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", age=" + age +
+                ", job=" + job +
+                '}';
     }
 }
