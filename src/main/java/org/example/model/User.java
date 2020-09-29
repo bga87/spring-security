@@ -1,8 +1,8 @@
 package org.example.model;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,12 +31,11 @@ public class User {
 
     private byte age;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn
     private Job job;
 
-    protected User() {}
+    public User() {}
 
     public User(String name, String surname, byte age, Job job) {
         this.name = name;
@@ -83,6 +82,7 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
+//        System.out.println("In user equals");
         return this == obj || (obj instanceof User &&
                 ((User) obj).name.equalsIgnoreCase(name) &&
                 ((User) obj).surname.equalsIgnoreCase(surname) &&
@@ -97,11 +97,12 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", age=" + age +
-                ", job=" + job +
-                '}';
+//        return "User{" +
+//                "name='" + name + '\'' +
+//                ", surname='" + surname + '\'' +
+//                ", age=" + age +
+//                ", job=" + job +
+//                '}';
+        return name + ' ' + surname + ' ' + age + ' ' + job;
     }
 }
