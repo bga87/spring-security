@@ -50,7 +50,6 @@ public class PersistenceConfig {
         Properties props = new Properties();
         props.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        props.put("hibernate.id.new_generator_mappings", env.getProperty("hibernate.id.new_generator_mappings"));
 
         entityManagerFactory.setJpaProperties(props);
         return entityManagerFactory;

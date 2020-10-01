@@ -63,11 +63,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void delete(User user) {
+    public void delete(long id) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();
 
-        User loadedUser = entityManager.find(User.class, user.getId());
+        User loadedUser = entityManager.find(User.class, id);
 
         if (loadedUser != null) {
             entityManager.remove(loadedUser);
@@ -94,6 +94,13 @@ public class UserDaoImpl implements UserDao {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();
         return entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.job", User.class).getResultList();
+    }
+
+    @Override
+    public User getUserById(long id) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.joinTransaction();
+        return entityManager.find(User.class, id);
     }
 
     @Override

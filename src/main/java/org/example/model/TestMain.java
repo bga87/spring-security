@@ -33,7 +33,7 @@ public class TestMain {
         printAllUsers(usersService);
 
         System.out.println("Deleting " + testUser);
-        usersService.delete(testUser);
+        usersService.delete(testUser.getId());
 
         printAllUsers(usersService);
 
@@ -64,5 +64,3 @@ public class TestMain {
         System.out.println();
     }
 }
-
-

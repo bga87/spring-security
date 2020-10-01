@@ -5,18 +5,24 @@
     <title>Создание нового пользователя</title>
 </head>
 <body>
-    <form th:method="POST" th:action="@{/users}" th:object="${user}">
+    <form th:method="POST" th:action="@{/users}" th:object="${userData}">
         <div>
             <label for="name">Имя</label>
-            <input type="text" th:field="*{name}" id="name">
+            <input type="text" required="true" th:field="*{user.name}" id="name">
             <br>
             <label for="surname">Фамилия</label>
-            <input type="text" th:field="*{surname}" id="surname">
+            <input type="text" required="true" th:field="*{user.surname}" id="surname">
             <br>
             <label for="age">Возраст</label>
-            <input type="text" th:field="*{age}" id="age">
+            <input type="number" min="0" th:field="*{user.age}" id="age">
             <br>
-            <input type="submit" value="Создать пользователя">
+            <label for="jobName">Профессия</label>
+            <input type="text" th:field="*{job.name}" id="jobName">
+            <br>
+            <label for="salary">Зарплата</label>
+            <input type="number" min="0" th:field="*{job.salary}" id="salary">
+            <br>
+            <input type="submit" value="Создать">
         </div>
     </form>
 

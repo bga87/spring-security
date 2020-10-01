@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        table {
+            border-collapse: separate;
+            border: 2px solid black;
+            border-spacing: 4px;
+        }
+        td {
+            padding: 5px;
+            padding-right: 30px;
+            border: 1px solid lightgray;
+        }
+        td:first-child {
+            font-style: italic;
+        }
+    </style>
+    <title th:text="'Данные пользователя ' + ${user.name}">Title</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>Имя</td>
+            <td th:text="${user.name}">name</td>
+        </tr>
+        <tr>
+            <td>Фамилия</td>
+            <td th:text="${user.surname}">surname</td>
+        </tr>
+        <tr>
+            <td>Возраст</td>
+            <td th:text="${user.age}">age</td>
+        </tr>
+        <tr>
+            <td>Профессия</td>
+            <td>Безработный</td>
+        </tr>
+    </table>
+</body>
+</html>
