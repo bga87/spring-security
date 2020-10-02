@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка</title>
+</head>
+<body>
+    <p style="color: red; font-weight: bold" th:text="${errorMessage} + '!'">ошибка</p>
+    <a href="/users" style="font-weight: bold; font-style: normal">На главную</a>
+</body>
+</html>

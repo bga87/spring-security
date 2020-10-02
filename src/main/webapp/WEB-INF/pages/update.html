@@ -2,10 +2,10 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Создание нового пользователя</title>
+    <title>Обновление данных пользователя</title>
 </head>
 <body>
-    <form th:method="POST" th:action="@{/users}" th:object="${userData}">
+    <form th:method="POST" th:action="@{/users/update/{id}(id=${userData.user.id})}" th:object="${userData}">
         <div>
             <label for="name">Имя</label>
             <input type="text" required="true" th:field="*{user.name}" id="name">
@@ -22,7 +22,8 @@
             <label for="salary">Зарплата</label>
             <input type="number" min="0" th:field="*{job.salary}" id="salary">
             <br>
-            <input type="submit" value="Создать">
+            <input type="submit" value="Обновить">
+            <input type="reset" value="Сбросить изменения">
         </div>
     </form>
 </body>

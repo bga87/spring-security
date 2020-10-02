@@ -81,7 +81,6 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-//        System.out.println("In user equals");
         return this == obj || (obj instanceof User &&
                 ((User) obj).name.equalsIgnoreCase(name) &&
                 ((User) obj).surname.equalsIgnoreCase(surname) &&
@@ -96,12 +95,11 @@ public class User {
 
     @Override
     public String toString() {
-//        return "User{" +
-//                "name='" + name + '\'' +
-//                ", surname='" + surname + '\'' +
-//                ", age=" + age +
-//                ", job=" + job +
-//                '}';
-        return name + ' ' + surname + ' ' + age + ' ' + job;
+        return "User{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", age=" + age +
+                ", job=" + job +
+                '}';
     }
 }

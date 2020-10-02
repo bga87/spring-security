@@ -5,8 +5,8 @@ import org.example.model.User;
 
 
 public class UserDto {
-    private final User user = new User();
-    private final Job job = new Job();
+    private User user;
+    private Job job;
 
     public User getUser() {
         return user;
@@ -14,5 +14,21 @@ public class UserDto {
 
     public Job getJob() {
         return job;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    public User extractUser() {
+        if (!job.getName().isEmpty()) {
+            user.setJob(job);
+        }
+
+        return user;
     }
 }

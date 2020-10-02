@@ -32,6 +32,8 @@
             </td>
             <td>
                 <a th:href="@{/users/delete/{id}(id=${user.id})}">Удалить</a>
+                <br>
+                <a th:href="@{/users/update/{id}(id=${user.id})}">Изменить</a>
             </td>
         </tr>
         <tr>
@@ -42,10 +44,5 @@
             </td>
         </tr>
     </table>
-
-    <!--<div th:each="user : ${users}">
-        <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getName() + ' ' + user.getSurname()}">user</a>
-        <a th:href="@{/users/delete/{id}(id=${user.getId()})}">Удалить</a>
-    </div>-->
 </body>
 </html>

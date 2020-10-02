@@ -1,21 +1,17 @@
 package org.example.dao;
 
+import org.example.exceptions.UserAlreadyExistsException;
 import org.example.model.Job;
 import org.example.model.User;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
 
 @Repository("userDao")
 public class UserDaoImpl implements UserDao {
@@ -28,28 +24,31 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public long save(User user) {
+    public long save(User user) throws UserAlreadyExistsException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();
 
         setJobFromPersistentIfAlreadyExists(user, entityManager);
 
-        List<User> possiblyIdenticalUsers = entityManager.createQuery("SELECT u FROM User u " +
-                "WHERE u.name = :name AND u.surname = :surname AND u.age = : age", User.class)
-                .setParameter("name", user.getName())
-                .setParameter("surname", user.getSurname())
-                .setParameter("age", user.getAge())
-                .getResultList();
-
         long savedUserId = -1;
-        if (!possiblyIdenticalUsers.contains(user)) {
+        if (!userIsAlreadyPersisted(user, entityManager)) {
             entityManager.persist(user);
             savedUserId = user.getId();
         } else {
-            System.out.println("Duplicate user found: " + user);
+            throw new UserAlreadyExistsException("Пользователь " + user + " был сохранен в базе данных ранее");
         }
 
         return savedUserId;
+    }
+
+    private boolean userIsAlreadyPersisted(User user, EntityManager entityManager) {
+        return entityManager.createQuery("SELECT u FROM User u " +
+                "WHERE u.name = :name AND u.surname = :surname AND u.age = :age", User.class)
+                .setParameter("name", user.getName())
+                .setParameter("surname", user.getSurname())
+                .setParameter("age", user.getAge())
+                .getResultList()
+                .contains(user);
     }
 
     private void setJobFromPersistentIfAlreadyExists(User user, EntityManager entityManager) {
@@ -84,7 +83,6 @@ public class UserDaoImpl implements UserDao {
         if (usersWithTheSameJob.size() == 0) {
             // на эту запись job больше никто не ссылается из таблицы user,
             // ее можно удалять
-            System.out.println("Orphaned entry found");
             entityManager.remove(job);
         }
     }
@@ -104,20 +102,31 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void update(User user) {
+    public void update(long id, User user) throws UserAlreadyExistsException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();
 
-        User targetUser = entityManager.find(User.class, user.getId());
-        Optional<Job> oldUserJob = Optional.empty();
+        User targetUser = entityManager.find(User.class, id);
 
-        if (!jobsAreTheSame(targetUser.getJob(), user.getJob())) {
-            user.getJob().ifPresent(job -> setJobFromPersistentIfAlreadyExists(user, entityManager));
-            oldUserJob = targetUser.getJob();
+        if (!targetUser.equals(user)) {
+            Optional<Job> oldUserJob = Optional.empty();
+
+            if (!jobsAreTheSame(targetUser.getJob(), user.getJob())) {
+                user.getJob().ifPresent(job -> setJobFromPersistentIfAlreadyExists(user, entityManager));
+                oldUserJob = targetUser.getJob();
+            }
+
+            if (!userIsAlreadyPersisted(user, entityManager)) {
+                targetUser.setName(user.getName());
+                targetUser.setSurname(user.getSurname());
+                targetUser.setAge(user.getAge());
+                targetUser.setJob(user.getJob().orElse(null));
+            } else {
+                throw new UserAlreadyExistsException("Пользователь " + user + " был сохранен в базе данных ранее");
+            }
+
+            oldUserJob.ifPresent(oldJob -> removeIfOrphanJob(oldJob, entityManager));
         }
-
-        entityManager.merge(user);
-        oldUserJob.ifPresent(oldJob -> removeIfOrphanJob(oldJob, entityManager));
     }
 
     private boolean jobsAreTheSame(Optional<Job> originalJobOpt, Optional<Job> newJobOpt) {

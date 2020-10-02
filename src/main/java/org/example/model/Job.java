@@ -51,7 +51,6 @@ public class Job {
 
     @Override
     public boolean equals(Object obj) {
-//        System.out.println("In job equals");
         return this == obj || ((obj instanceof Job) &&
                 ((Job) obj).getName().equalsIgnoreCase(getName()) &&
                 ((Job) obj).getSalary() == getSalary());
@@ -64,10 +63,9 @@ public class Job {
 
     @Override
     public String toString() {
-//        return "Job{" +
-//                "name='" + name + '\'' +
-//                ", salary=" + salary +
-//                '}';
-        return name + ' ' + salary;
+        return "Job{" +
+                "name='" + name + '\'' +
+                ", salary=" + salary +
+                '}';
     }
 }
