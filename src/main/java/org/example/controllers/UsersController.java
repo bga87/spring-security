@@ -2,7 +2,6 @@ package org.example.controllers;
 
 import org.example.dto.UserDto;
 import org.example.exceptions.UserAlreadyExistsException;
-import org.example.model.Job;
 import org.example.model.User;
 import org.example.services.UsersService;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.nio.charset.StandardCharsets;
 
 @Controller
 @RequestMapping("/users")
@@ -60,7 +58,6 @@ public class UsersController {
     @PostMapping("/update/{id}")
     public String update (@PathVariable("id") long id, @ModelAttribute("userData") UserDto userDto, Model model) {
         User user = userDto.extractUser();
-        decodeStringsFromLatin1ToUtf8(user);
 
         try {
             usersService.update(id, user);
@@ -75,7 +72,6 @@ public class UsersController {
     @PostMapping()
     public String create(@ModelAttribute("userData") UserDto userDto, Model model) {
         User user = userDto.extractUser();
-        decodeStringsFromLatin1ToUtf8(user);
 
         try {
             usersService.save(user);
@@ -85,13 +81,5 @@ public class UsersController {
         }
 
         return "redirect:/users";
-    }
-
-    private void decodeStringsFromLatin1ToUtf8(User user) {
-        user.setName(new String(user.getName().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
-        user.setSurname(new String(user.getSurname().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
-        user.getJob().ifPresent(
-                job -> job.setName(new String(job.getName().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8))
-        );
     }
 }
