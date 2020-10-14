@@ -1,16 +1,20 @@
 package org.example.controllers;
 
 import org.example.dto.UserDto;
-import org.example.exceptions.UserAlreadyExistsException;
+import org.example.model.Job;
 import org.example.model.User;
 import org.example.services.UsersService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 
 @Controller
@@ -23,17 +27,31 @@ public class UsersController {
         this.usersService = usersService;
     }
 
-    @GetMapping()
-    public String index(Model model) {
-        model.addAttribute("users", usersService.listUsers());
-        return "index";
+    @ModelAttribute("newUserData")
+    public UserDto getNewUserData() {
+        UserDto userData = new UserDto();
+        userData.setUser(new User("[Введите имя]", "[Ведите фамилию]", (byte) -1, null));
+        userData.setJob(new Job("[Введите профессию]", -1));
+        System.out.println("returning " + userData);
+        return userData;
     }
 
-    @GetMapping("/{id}")
-    public String showUser(@PathVariable("id") long id, Model model) {
+    @GetMapping()
+    public String index() {
+        return "redirect:/users/list";
+    }
+
+    @GetMapping("/list")
+    @ModelAttribute("users")
+    public List<User> listUsers() {
+        return usersService.listUsers();
+    }
+
+    @GetMapping(params = "action=show")
+    public String showUser(@RequestParam("userId") long id, Model model) {
         User user = usersService.getUserById(id);
         model.addAttribute("user", user);
-        return user.getJob().isPresent() ? "show_employeed" : "show_unemployeed";
+        return user.getJob().isPresent() ? "employeedUserInfo" : "unemployeedUserInfo";
     }
 
     @GetMapping("/delete/{id}")
@@ -42,9 +60,9 @@ public class UsersController {
         return "redirect:/users";
     }
 
-    @GetMapping("/new")
-    public String newUser(@ModelAttribute("userData") UserDto userDto) {
-        return "new";
+    @PostMapping(params = "action=createNewUserForm")
+    public String showCreateUserForm() {
+        return "createUserForm";
     }
 
     @GetMapping("/update/{id}")
@@ -58,28 +76,21 @@ public class UsersController {
     @PostMapping("/update/{id}")
     public String update (@PathVariable("id") long id, @ModelAttribute("userData") UserDto userDto, Model model) {
         User user = userDto.extractUser();
-
-        try {
-            usersService.update(id, user);
-        } catch (UserAlreadyExistsException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "duplicate_user_info";
-        }
-
+        usersService.update(id, user);
         return "redirect:/users";
     }
 
-    @PostMapping()
-    public String create(@ModelAttribute("userData") UserDto userDto, Model model) {
+    @PostMapping(params = "action=create")
+    public String create(@ModelAttribute("newUserData") UserDto userDto, Model model) {
+        System.out.println("got " + userDto);
         User user = userDto.extractUser();
-
-        try {
-            usersService.save(user);
-        } catch (UserAlreadyExistsException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "duplicate_user_info";
-        }
-
+        usersService.save(user);
         return "redirect:/users";
+    }
+
+    @ExceptionHandler
+    public String handleException(Exception ex, Model model) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        return "errorInfo";
     }
 }

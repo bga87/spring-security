@@ -1,7 +1,6 @@
 package org.example.services;
 
 import org.example.dao.UserDao;
-import org.example.exceptions.UserAlreadyExistsException;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class UsersServiceImpl implements UsersService {
 
     @Transactional
     @Override
-    public long save(User u) throws UserAlreadyExistsException {
+    public long save(User u) throws IllegalStateException {
         return userDao.save(u);
     }
 
@@ -45,7 +44,7 @@ public class UsersServiceImpl implements UsersService {
 
     @Transactional
     @Override
-    public void update(long id, User user) throws UserAlreadyExistsException {
+    public void update(long id, User user) throws IllegalStateException {
         userDao.update(id, user);
     }
 }

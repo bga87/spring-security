@@ -10,7 +10,7 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return null;
+        return new Class<?>[] {RootConfig.class};
     }
 
     @Override
@@ -25,6 +25,8 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
 
     @Override
     protected Filter[] getServletFilters() {
-        return new Filter[] {new CharacterEncodingFilter("utf8", false, true)};
+        return new Filter[] {
+                new CharacterEncodingFilter("utf8", false, true)
+        };
     }
 }

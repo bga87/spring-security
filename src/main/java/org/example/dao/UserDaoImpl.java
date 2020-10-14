@@ -1,6 +1,5 @@
 package org.example.dao;
 
-import org.example.exceptions.UserAlreadyExistsException;
 import org.example.model.Job;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public long save(User user) throws UserAlreadyExistsException {
+    public long save(User user) throws IllegalStateException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();
 
@@ -35,7 +34,7 @@ public class UserDaoImpl implements UserDao {
             entityManager.persist(user);
             savedUserId = user.getId();
         } else {
-            throw new UserAlreadyExistsException("Пользователь " + user + " был сохранен в базе данных ранее");
+            throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
         }
 
         return savedUserId;
@@ -102,7 +101,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void update(long id, User user) throws UserAlreadyExistsException {
+    public void update(long id, User user) throws IllegalStateException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();
 
@@ -122,7 +121,7 @@ public class UserDaoImpl implements UserDao {
                 targetUser.setAge(user.getAge());
                 targetUser.setJob(user.getJob().orElse(null));
             } else {
-                throw new UserAlreadyExistsException("Пользователь " + user + " был сохранен в базе данных ранее");
+                throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
             }
 
             oldUserJob.ifPresent(oldJob -> removeIfOrphanJob(oldJob, entityManager));

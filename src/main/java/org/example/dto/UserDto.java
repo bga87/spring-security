@@ -31,4 +31,12 @@ public class UserDto {
 
         return user;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() +  " UserDto{" +
+                "user=" + user +
+                ", job=" + job +
+                '}';
+    }
 }

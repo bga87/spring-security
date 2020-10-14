@@ -5,7 +5,7 @@
     <title>Создание нового пользователя</title>
 </head>
 <body>
-    <form th:method="POST" th:action="@{/users}" th:object="${userData}">
+    <form method="POST" action="/users?action=create" th:object="${newUserData}">
         <div>
             <label for="name">Имя</label>
             <input type="text" required="true" th:field="*{user.name}" id="name">
