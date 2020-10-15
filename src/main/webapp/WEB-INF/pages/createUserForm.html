@@ -8,19 +8,19 @@
     <form method="POST" action="/users?action=create" th:object="${newUserData}">
         <div>
             <label for="name">Имя</label>
-            <input type="text" required="true" th:field="*{user.name}" id="name">
+            <input type="text" required="true" th:field="*{name}" id="name">
             <br>
             <label for="surname">Фамилия</label>
-            <input type="text" required="true" th:field="*{user.surname}" id="surname">
+            <input type="text" required="true" th:field="*{surname}" id="surname">
             <br>
             <label for="age">Возраст</label>
-            <input type="number" min="0" max="127" th:field="*{user.age}" id="age">
+            <input type="number" min="0" max="127" th:field="*{age}" id="age">
             <br>
             <label for="jobName">Профессия</label>
-            <input type="text" th:field="*{job.name}" id="jobName">
+            <input type="text" th:field="*{jobName}" id="jobName">
             <br>
             <label for="salary">Зарплата</label>
-            <input type="number" min="0" th:field="*{job.salary}" id="salary">
+            <input type="number" min="0" th:field="*{salary}" id="salary">
             <br>
             <input type="submit" value="Создать">
         </div>

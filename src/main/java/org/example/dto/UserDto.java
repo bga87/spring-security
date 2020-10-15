@@ -5,38 +5,79 @@ import org.example.model.User;
 
 
 public class UserDto {
-    private User user;
-    private Job job;
+    private Long id;
+    private String name;
+    private String surname;
+    private byte age;
+    private String jobName;
+    private int salary;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public byte getAge() {
+        return age;
+    }
+
+    public void setAge(byte age) {
+        this.age = age;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
 
     public User getUser() {
-        return user;
+        Job job = !jobName.isEmpty() ? new Job(jobName, salary) : null;
+        return new User(name, surname, age, job);
     }
 
-    public Job getJob() {
-        return job;
+    public void extractDataFrom(User user) {
+        id = user.getId();
+        name = user.getName();
+        surname = user.getSurname();
+        age = user.getAge();
+        jobName = user.getJob().map(Job::getName).orElse("");
+        salary = user.getJob().map(Job::getSalary).orElse(0);
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setJob(Job job) {
-        this.job = job;
-    }
-
-    public User extractUser() {
-        if (!job.getName().isEmpty()) {
-            user.setJob(job);
-        }
-
-        return user;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() +  " UserDto{" +
-                "user=" + user +
-                ", job=" + job +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return super.toString().substring(16) + " UserDto{" +
+//                "name='" + name + '\'' +
+//                ", surname='" + surname + '\'' +
+//                ", age=" + age +
+//                ", jobName='" + jobName + '\'' +
+//                ", jobSalary='" + salary + '\'' +
+//                '}';
+//    }
 }

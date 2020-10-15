@@ -1,7 +1,6 @@
 package org.example.controllers;
 
 import org.example.dto.UserDto;
-import org.example.model.Job;
 import org.example.model.User;
 import org.example.services.UsersService;
 import org.springframework.stereotype.Controller;
@@ -9,16 +8,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 import java.util.List;
 
 
 @Controller
 @RequestMapping("/users")
+@SessionAttributes(names = {"newUserData"})
 public class UsersController {
 
     private final UsersService usersService;
@@ -30,9 +31,11 @@ public class UsersController {
     @ModelAttribute("newUserData")
     public UserDto getNewUserData() {
         UserDto userData = new UserDto();
-        userData.setUser(new User("[Введите имя]", "[Ведите фамилию]", (byte) -1, null));
-        userData.setJob(new Job("[Введите профессию]", -1));
-        System.out.println("returning " + userData);
+        userData.setName("Введите имя");
+        userData.setSurname("Ведите фамилию");
+        userData.setAge((byte) 0);
+        userData.setJobName("Введите наименование профессии");
+        userData.setSalary(0);
         return userData;
     }
 
@@ -43,7 +46,7 @@ public class UsersController {
 
     @GetMapping("/list")
     @ModelAttribute("users")
-    public List<User> listUsers() {
+    public List<User> listUsers(Model model) {
         return usersService.listUsers();
     }
 
@@ -51,41 +54,38 @@ public class UsersController {
     public String showUser(@RequestParam("userId") long id, Model model) {
         User user = usersService.getUserById(id);
         model.addAttribute("user", user);
-        return user.getJob().isPresent() ? "employeedUserInfo" : "unemployeedUserInfo";
+        return "userInfo";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
+    @GetMapping(params = "action=delete")
+    public String deleteUser(@RequestParam("userId") long id) {
         usersService.delete(id);
         return "redirect:/users";
     }
 
-    @PostMapping(params = "action=createNewUserForm")
+    @PostMapping(params = "action=showCreateUserForm")
     public String showCreateUserForm() {
         return "createUserForm";
     }
 
-    @GetMapping("/update/{id}")
-    public String updateUser(@PathVariable("id") long id, @ModelAttribute("userData") UserDto userDto) {
-        User user = usersService.getUserById(id);
-        userDto.setUser(user);
-        user.getJob().ifPresent(userDto::setJob);
-        return "update";
-    }
-
-    @PostMapping("/update/{id}")
-    public String update (@PathVariable("id") long id, @ModelAttribute("userData") UserDto userDto, Model model) {
-        User user = userDto.extractUser();
-        usersService.update(id, user);
-        return "redirect:/users";
-    }
-
     @PostMapping(params = "action=create")
-    public String create(@ModelAttribute("newUserData") UserDto userDto, Model model) {
-        System.out.println("got " + userDto);
-        User user = userDto.extractUser();
-        usersService.save(user);
-        return "redirect:/users";
+    public String create(@ModelAttribute("newUserData") UserDto userDto, SessionStatus sessionStatus) {
+        usersService.save(userDto.getUser());
+        sessionStatus.setComplete();
+        return "redirect:/users/list";
+    }
+
+    @GetMapping(params = "action=showUpdateUserForm")
+    public String showUpdateUserForm(@RequestParam("userId") long id, @ModelAttribute("userData") UserDto userDto) {
+        userDto.extractDataFrom(usersService.getUserById(id));
+        return "updateUserForm";
+    }
+
+    @PostMapping(params = "action=update")
+    public String updateUser(@RequestParam("userId") long id, @ModelAttribute("userData") UserDto userDto) {
+        User user = userDto.getUser();
+        usersService.update(id, user);
+        return "redirect:/users/list";
     }
 
     @ExceptionHandler
