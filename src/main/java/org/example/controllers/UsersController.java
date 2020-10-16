@@ -19,7 +19,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
-@SessionAttributes(names = {"newUserData"})
+@SessionAttributes(names = {"newUserData", "userData"})
 public class UsersController {
 
     private final UsersService usersService;
@@ -60,7 +60,7 @@ public class UsersController {
     @GetMapping(params = "action=delete")
     public String deleteUser(@RequestParam("userId") long id) {
         usersService.delete(id);
-        return "redirect:/users";
+        return "redirect:/users/list";
     }
 
     @PostMapping(params = "action=showCreateUserForm")
@@ -76,15 +76,17 @@ public class UsersController {
     }
 
     @GetMapping(params = "action=showUpdateUserForm")
-    public String showUpdateUserForm(@RequestParam("userId") long id, @ModelAttribute("userData") UserDto userDto) {
+    public String showUpdateUserForm(@RequestParam("userId") long id, Model model) {
+        UserDto userDto = new UserDto();
         userDto.extractDataFrom(usersService.getUserById(id));
+        model.addAttribute("userData", userDto);
         return "updateUserForm";
     }
 
     @PostMapping(params = "action=update")
-    public String updateUser(@RequestParam("userId") long id, @ModelAttribute("userData") UserDto userDto) {
-        User user = userDto.getUser();
-        usersService.update(id, user);
+    public String updateUser(@ModelAttribute("userData") UserDto userDto, SessionStatus sessionStatus) {
+        usersService.update(userDto.getId(), userDto.getUser());
+        sessionStatus.setComplete();
         return "redirect:/users/list";
     }
 

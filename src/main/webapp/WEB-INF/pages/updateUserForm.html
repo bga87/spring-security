@@ -5,7 +5,7 @@
     <title>Обновление данных пользователя</title>
 </head>
 <body>
-    <form th:method="POST" th:action="@{/users?action=update(userId=*{id})}" th:object="${userData}">
+    <form th:method="POST" th:action="@{/users?action=update}" th:object="${userData}">
         <div>
             <label for="name">Имя</label>
             <input type="text" required="true" th:field="*{name}" id="name">

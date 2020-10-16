@@ -80,8 +80,7 @@ public class UserDaoImpl implements UserDao {
                 .getResultList();
 
         if (usersWithTheSameJob.size() == 0) {
-            // на эту запись job больше никто не ссылается из таблицы user,
-            // ее можно удалять
+            // на эту запись job больше никто не ссылается из таблицы user, ее можно удалять
             entityManager.remove(job);
         }
     }
@@ -107,24 +106,25 @@ public class UserDaoImpl implements UserDao {
 
         User targetUser = entityManager.find(User.class, id);
 
-        if (!targetUser.equals(user)) {
-            Optional<Job> oldUserJob = Optional.empty();
+        // Если изменненый user идентичен соответствующему ему из БД,
+        // то дальнейшее выполнение метода не имеет смысла
+        if (targetUser.equals(user)) {
+            return;
+        }
+
+        if (!userIsAlreadyPersisted(user, entityManager)) {
+            targetUser.setName(user.getName());
+            targetUser.setSurname(user.getSurname());
+            targetUser.setAge(user.getAge());
 
             if (!jobsAreTheSame(targetUser.getJob(), user.getJob())) {
-                user.getJob().ifPresent(job -> setJobFromPersistentIfAlreadyExists(user, entityManager));
-                oldUserJob = targetUser.getJob();
-            }
-
-            if (!userIsAlreadyPersisted(user, entityManager)) {
-                targetUser.setName(user.getName());
-                targetUser.setSurname(user.getSurname());
-                targetUser.setAge(user.getAge());
+                setJobFromPersistentIfAlreadyExists(user, entityManager);
+                Optional<Job> oldUserJob = targetUser.getJob();
                 targetUser.setJob(user.getJob().orElse(null));
-            } else {
-                throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
+                oldUserJob.ifPresent(oldJob -> removeIfOrphanJob(oldJob, entityManager));
             }
-
-            oldUserJob.ifPresent(oldJob -> removeIfOrphanJob(oldJob, entityManager));
+        } else {
+            throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
         }
     }
 

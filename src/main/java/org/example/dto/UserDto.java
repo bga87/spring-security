@@ -69,15 +69,4 @@ public class UserDto {
         jobName = user.getJob().map(Job::getName).orElse("");
         salary = user.getJob().map(Job::getSalary).orElse(0);
     }
-
-//    @Override
-//    public String toString() {
-//        return super.toString().substring(16) + " UserDto{" +
-//                "name='" + name + '\'' +
-//                ", surname='" + surname + '\'' +
-//                ", age=" + age +
-//                ", jobName='" + jobName + '\'' +
-//                ", jobSalary='" + salary + '\'' +
-//                '}';
-//    }
 }
