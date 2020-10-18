@@ -100,6 +100,16 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User getUserByLogin(String login) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.joinTransaction();
+        return entityManager.createQuery("SELECT u FROM User u " +
+                "WHERE u.securityDetails.login = :login", User.class)
+                .setParameter("login", login)
+                .getSingleResult();
+    }
+
+    @Override
     public void update(long id, User user) throws IllegalStateException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.joinTransaction();

@@ -1,10 +1,11 @@
 package org.example.services;
 
 import org.example.model.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UsersService {
+public interface UsersService extends UserDetailsService {
     long save(User user) throws IllegalStateException;
     void delete(long id);
     List<User> listUsers();

@@ -3,6 +3,8 @@ package org.example.services;
 import org.example.dao.UserDao;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,12 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public User getUserById(long id) {
         return userDao.getUserById(id);
+    }
+
+    @Transactional
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        return userDao.getUserByLogin(s);
     }
 
     @Transactional

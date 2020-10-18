@@ -9,5 +9,6 @@ public interface UserDao {
     void delete(long id);
     List<User> listUsers();
     User getUserById(long id);
+    User getUserByLogin(String login);
     void update(long id, User user) throws IllegalStateException;
 }

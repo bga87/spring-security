@@ -3,6 +3,7 @@ package org.example.controllers;
 import org.example.dto.UserDto;
 import org.example.model.User;
 import org.example.services.UsersService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,14 +29,11 @@ public class UsersController {
         this.usersService = usersService;
     }
 
+//    @Autowired
     @ModelAttribute("newUserData")
-    public UserDto getNewUserData() {
-        UserDto userData = new UserDto();
-        userData.setName("Введите имя");
-        userData.setSurname("Ведите фамилию");
-        userData.setAge((byte) 0);
-        userData.setJobName("Введите наименование профессии");
-        userData.setSalary(0);
+    public UserDto getNewUserData(UserDto userData) {
+        System.out.println("got " + userData);
+
         return userData;
     }
 
@@ -46,7 +44,7 @@ public class UsersController {
 
     @GetMapping("/list")
     @ModelAttribute("users")
-    public List<User> listUsers(Model model) {
+    public List<User> listUsers() {
         return usersService.listUsers();
     }
 
@@ -70,14 +68,15 @@ public class UsersController {
 
     @PostMapping(params = "action=create")
     public String create(@ModelAttribute("newUserData") UserDto userDto, SessionStatus sessionStatus) {
+        System.out.println("in create() got " + userDto);
         usersService.save(userDto.getUser());
         sessionStatus.setComplete();
         return "redirect:/users/list";
     }
 
     @GetMapping(params = "action=showUpdateUserForm")
-    public String showUpdateUserForm(@RequestParam("userId") long id, Model model) {
-        UserDto userDto = new UserDto();
+    public String showUpdateUserForm(@RequestParam("userId") long id, UserDto userDto, Model model) {
+//        UserDto userDto = new UserDto();
         userDto.extractDataFrom(usersService.getUserById(id));
         model.addAttribute("userData", userDto);
         return "updateUserForm";
