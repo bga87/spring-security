@@ -19,7 +19,7 @@ public class SecurityDetails {
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
-            name = "user_roles",
+            name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "rode_id")
     )

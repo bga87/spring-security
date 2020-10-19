@@ -1,33 +1,44 @@
 package org.example.dto;
 
 import org.example.model.Job;
+import org.example.model.Role;
 import org.example.model.User;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.format.support.DefaultFormattingConversionService;
-import org.springframework.stereotype.Component;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
-@Component
-@Scope("prototype")
 public class UserDto {
 
     private Long id;
     private String name;
     private String surname;
     private byte age;
-    private  String login;
-    private String password;
     private String jobName;
     private int salary;
+    private  String login;
+    private String password;
+    private Set<String> roles;
 
     public UserDto() {
-        System.out.println("UserDto constructor called");
-        this.name = "Введите имя";
-        this.surname = "Ведите фамилию";
-        this.login = "Введите логин";
-        this.jobName = "Введите наименование профессии";
+        name = "Введите имя";
+        surname = "Ведите фамилию";
+        jobName = "Введите профессию";
+        login = "Введите логин";
+    }
+
+    public UserDto(User user) {
+        id = user.getId();
+        name = user.getName();
+        surname = user.getSurname();
+        age = user.getAge();
+        login = user.getSecurityDetails().getLogin();
+        password = user.getSecurityDetails().getPassword();
+        roles = user.getSecurityDetails().getRoles().stream()
+                .map(Role::getRoleName)
+                .collect(Collectors.toSet());
+        jobName = user.getJob().map(Job::getName).orElse("");
+        salary = user.getJob().map(Job::getSalary).orElse(0);
     }
 
     public Long getId() {
@@ -90,33 +101,26 @@ public class UserDto {
         this.salary = salary;
     }
 
-    public User getUser() {
-        Job job = !jobName.isEmpty() ? new Job(jobName, salary) : null;
-        return new User(name, surname, age, job);
+    public Set<String> getRoles() {
+        return roles;
     }
 
-    public void extractDataFrom(User user) {
-        id = user.getId();
-        name = user.getName();
-        surname = user.getSurname();
-        age = user.getAge();
-        login = user.getSecurityDetails().getLogin();
-        password = user.getSecurityDetails().getPassword();
-        jobName = user.getJob().map(Job::getName).orElse("");
-        salary = user.getJob().map(Job::getSalary).orElse(0);
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 
     @Override
     public String toString() {
-        return super.toString() +  " UserDto{" +
+        return "UserDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", age=" + age +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
                 ", jobName='" + jobName + '\'' +
                 ", salary=" + salary +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" +  roles +
                 '}';
     }
 }

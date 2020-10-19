@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import org.example.model.Job;
+import org.example.model.Role;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,8 @@ import javax.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Repository("userDao")
@@ -28,6 +31,7 @@ public class UserDaoImpl implements UserDao {
         entityManager.joinTransaction();
 
         setJobFromPersistentIfAlreadyExists(user, entityManager);
+        setRolesFromPersistentIfAlreadyExists(user, entityManager);
 
         long savedUserId = -1;
         if (!userIsAlreadyPersisted(user, entityManager)) {
@@ -38,6 +42,17 @@ public class UserDaoImpl implements UserDao {
         }
 
         return savedUserId;
+    }
+
+    private void setRolesFromPersistentIfAlreadyExists(User user, EntityManager entityManager) {
+        Set<Role> persistentRoles = user.getSecurityDetails().getRoles().stream()
+                .filter(role -> role.getId() != null)
+                .map(entityManager::merge)
+                .collect(Collectors.toSet());
+
+        if (persistentRoles.size() > 0) {
+            user.getSecurityDetails().setRoles(persistentRoles);
+        }
     }
 
     private boolean userIsAlreadyPersisted(User user, EntityManager entityManager) {

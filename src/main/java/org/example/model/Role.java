@@ -22,11 +22,17 @@ public class Role implements GrantedAuthority {
     @Column(name = "role_name", nullable = false)
     private String roleName;
 
+    @Column(name = "display_name", nullable = false)
+    private String displayName;
+
     public Role() {
+        System.out.println("Role default constructor called ");
     }
 
-    public Role(String roleName) {
+    public Role(String roleName, String displayName) {
+        System.out.println("Role standard constructor called ");
         this.roleName = roleName;
+        this.displayName = displayName;
     }
 
     public Long getId() {
@@ -41,8 +47,25 @@ public class Role implements GrantedAuthority {
         this.roleName = roleName;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
     @Override
     public String getAuthority() {
         return roleName;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Role{" +
+                "id='" + id + '\'' +
+                "roleName='" + roleName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                '}';
     }
 }

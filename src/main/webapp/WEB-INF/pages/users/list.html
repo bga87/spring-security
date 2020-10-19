@@ -29,11 +29,11 @@
                 <th>Действия</th>
             </tr>
             <tr th:each="user : ${users}">
-                <td>
+                <td th:if="${!user.name.equals('admin')}">
                     <a th:href="@{/users?action=show(userId=${user.id})}"
                        th:text="${user.name + #strings.prepend(user.surname, ' ')}">Имя Фамилия пользователя</a>
                 </td>
-                <td>
+                <td th:if="${!user.name.equals('admin')}">
                     <a th:href="@{/users?action=delete(userId=${user.id})}">Удалить</a>
                     <br>
                     <a th:href="@{/users?action=showUpdateUserForm(userId=${user.id})}">Изменить</a>

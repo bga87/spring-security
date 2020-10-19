@@ -50,12 +50,12 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(String name, String surname, byte age, Job job) {
+    public User(String name, String surname, byte age, Job job, SecurityDetails securityDetails) {
         this.name = name;
         this.surname = surname;
         this.age = age;
         this.job = job;
-//        this.securityDetails = securityDetails;
+        this.securityDetails = securityDetails;
     }
 
     public Long getId() {

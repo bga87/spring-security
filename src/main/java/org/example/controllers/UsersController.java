@@ -1,9 +1,9 @@
 package org.example.controllers;
 
 import org.example.dto.UserDto;
+import org.example.model.Role;
 import org.example.model.User;
 import org.example.services.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,12 +29,9 @@ public class UsersController {
         this.usersService = usersService;
     }
 
-//    @Autowired
     @ModelAttribute("newUserData")
-    public UserDto getNewUserData(UserDto userData) {
-        System.out.println("got " + userData);
-
-        return userData;
+    public UserDto getNewUserData() {
+        return new UserDto();
     }
 
     @GetMapping()
@@ -68,23 +65,21 @@ public class UsersController {
 
     @PostMapping(params = "action=create")
     public String create(@ModelAttribute("newUserData") UserDto userDto, SessionStatus sessionStatus) {
-        System.out.println("in create() got " + userDto);
-        usersService.save(userDto.getUser());
+        usersService.save(usersService.createUserFromDto(userDto));
         sessionStatus.setComplete();
         return "redirect:/users/list";
     }
 
     @GetMapping(params = "action=showUpdateUserForm")
-    public String showUpdateUserForm(@RequestParam("userId") long id, UserDto userDto, Model model) {
-//        UserDto userDto = new UserDto();
-        userDto.extractDataFrom(usersService.getUserById(id));
-        model.addAttribute("userData", userDto);
+    public String showUpdateUserForm(@RequestParam("userId") long id, Model model) {
+        UserDto userData = new UserDto(usersService.getUserById(id));
+        model.addAttribute("userData", userData);
         return "updateUserForm";
     }
 
     @PostMapping(params = "action=update")
     public String updateUser(@ModelAttribute("userData") UserDto userDto, SessionStatus sessionStatus) {
-        usersService.update(userDto.getId(), userDto.getUser());
+        usersService.update(userDto.getId(), usersService.createUserFromDto(userDto));
         sessionStatus.setComplete();
         return "redirect:/users/list";
     }
