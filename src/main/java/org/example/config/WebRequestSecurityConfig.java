@@ -43,9 +43,9 @@ public class WebRequestSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/users**").hasAuthority("ROLE_ADMIN")
-                .mvcMatchers("@{/users?action=show*}").hasAuthority("ROLE_USER")
-
+                .antMatchers("/users/**").authenticated()
+                .antMatchers("/users/admin**").hasAuthority("ROLE_ADMIN")
+                //.antMatchers("/users/user/\\d+").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                 .and()
                 .formLogin().successHandler(new LoginSuccessHandler())
                 .and()

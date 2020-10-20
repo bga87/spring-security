@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,
@@ -20,7 +21,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .anyMatch(roleName -> roleName.equalsIgnoreCase("role_admin"));
         httpServletResponse.sendRedirect(
                 isAdmin ?
-                        "/users" :
-                        "/users?action=show&userId=" + ((User) authentication.getPrincipal()).getId());
+                        "/users/admin" :
+                        "/users/user/" + ((User) authentication.getPrincipal()).getId());
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,48 +37,43 @@ public class UsersController {
 
     @GetMapping("/admin")
     public String adminAccess() {
-        return "redirect:/users";
+        return "redirect:/users/admin/list";
     }
 
-    @GetMapping("/user")
-    public String userAccess() {
-        return "redirect:/users?action=show&userId=1000";
+    @GetMapping("/user/{userId}")
+    public String userAccess(@PathVariable("userId") long id) {
+        return "redirect:/users/user/show/" + id;
     }
 
-    @GetMapping()
-    public String index() {
-        return "redirect:/users/list";
-    }
-
-    @GetMapping("/list")
+    @GetMapping("/admin/list")
     @ModelAttribute("users")
     public List<User> listUsers() {
         return usersService.listUsers();
     }
 
-    @GetMapping(params = "action=show")
-    public String showUser(@RequestParam("userId") long id, Model model) {
+    @GetMapping("/user/show/{userId}")
+    public String showUser(@PathVariable("userId") long id, Model model) {
         User user = usersService.getUserById(id);
         model.addAttribute("user", user);
         return "userInfo";
     }
 
-    @GetMapping(params = "action=delete")
+    @GetMapping(value = "/admin", params = "action=delete")
     public String deleteUser(@RequestParam("userId") long id) {
         usersService.delete(id);
-        return "redirect:/users/list";
+        return "redirect:/users/admin/list";
     }
 
-    @PostMapping(params = "action=showCreateUserForm")
+    @PostMapping(value = "/admin", params = "action=showCreateUserForm")
     public String showCreateUserForm() {
         return "createUserForm";
     }
 
-    @PostMapping(params = "action=create")
+    @PostMapping(value = "/admin", params = "action=create")
     public String create(@ModelAttribute("newUserData") UserDto userDto, SessionStatus sessionStatus) {
         usersService.save(usersService.createUserFromDto(userDto));
         sessionStatus.setComplete();
-        return "redirect:/users/list";
+        return "redirect:/users/admin/list";
     }
 
     @GetMapping(params = "action=showUpdateUserForm")
