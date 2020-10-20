@@ -34,6 +34,16 @@ public class UsersController {
         return new UserDto();
     }
 
+    @GetMapping("/admin")
+    public String adminAccess() {
+        return "redirect:/users";
+    }
+
+    @GetMapping("/user")
+    public String userAccess() {
+        return "redirect:/users?action=show&userId=1000";
+    }
+
     @GetMapping()
     public String index() {
         return "redirect:/users/list";

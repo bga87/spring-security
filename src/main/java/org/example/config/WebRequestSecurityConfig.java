@@ -1,5 +1,6 @@
 package org.example.config;
 
+import org.example.config.handler.LoginSuccessHandler;
 import org.example.model.Role;
 import org.example.model.SecurityDetails;
 import org.example.model.User;
@@ -41,10 +42,15 @@ public class WebRequestSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/**")
-                .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN").and()
-                .formLogin().and()
-                .logout();
-        http.csrf().disable();
+        http.authorizeRequests()
+                .antMatchers("/users**").hasAuthority("ROLE_ADMIN")
+                .mvcMatchers("@{/users?action=show*}").hasAuthority("ROLE_USER")
+
+                .and()
+                .formLogin().successHandler(new LoginSuccessHandler())
+                .and()
+                .logout()
+                .and()
+                .csrf().disable();
     }
 }

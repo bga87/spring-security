@@ -26,11 +26,9 @@ public class Role implements GrantedAuthority {
     private String displayName;
 
     public Role() {
-        System.out.println("Role default constructor called ");
     }
 
     public Role(String roleName, String displayName) {
-        System.out.println("Role standard constructor called ");
         this.roleName = roleName;
         this.displayName = displayName;
     }

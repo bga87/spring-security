@@ -19,14 +19,12 @@ public class RootConfig {
 
     @Bean("availableRoles")
     public Set<Role> availableRoles(ServletContext context) {
-        System.out.println("Creating avRoles bean");
         Set<Role> roles = new HashSet<>(
                 Arrays.asList(
                         new Role("ROLE_USER", "Пользователь"),
                         new Role("ROLE_ADMIN", "Администратор")
                 )
         );
-        System.out.println("Bean created " + roles);
         context.setAttribute("availableRoles", roles);
         return roles;
     }

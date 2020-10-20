@@ -1,52 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <style>
-        table {
-            border-collapse: separate;
-            border: 2px solid black;
-            border-spacing: 4px;
-        }
-        td {
-            padding: 5px;
-            padding-right: 30px;
-            border: 1px solid lightgray;
-        }
-        td:first-child {
-            font-style: italic;
-        }
-    </style>
-    <title>Данные пользователя</title>
-</head>
-<body>
-    <table th:object="${user}">
-        <tr>
-            <td>Имя</td>
-            <td th:text="*{name}">name</td>
-        </tr>
-        <tr>
-            <td>Фамилия</td>
-            <td th:text="*{surname}">surname</td>
-        </tr>
-        <tr>
-            <td>Возраст</td>
-            <td th:text="*{age}">age</td>
-        </tr>
-        <tr>
-            <td>Профессия</td>
-            <td th:text="*{job.isPresent() ? job.get().name : 'Безработный'}">jobName</td>
-        </tr>
-        <tr th:if="*{job.isPresent()}">
-            <td>Зарплата</td>
-            <td th:text="*{job.get().salary}">salary
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" style="border: none; text-align: center">
-                <a href="/users" style="font-weight: bold; font-style: normal">На главную</a>
-            </td>
-        </tr>
-    </table>
-</body>
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            table.styled-table {
+                border-collapse: separate;
+                border: 2px solid black;
+                border-spacing: 4px;
+            }
+            .styled-table td {
+                padding: 5px;
+                padding-right: 30px;
+                border: 1px solid lightgray;
+            }
+            .styled-table td:first-child {
+                font-style: italic;
+            }
+        </style>
+        <title>Данные пользователя</title>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td align="right" th:insert="header :: accountSection">
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="styled-table" th:object="${user}">
+                        <tr>
+                            <td>Имя</td>
+                            <td th:text="*{name}">name</td>
+                        </tr>
+                        <tr>
+                            <td>Фамилия</td>
+                            <td th:text="*{surname}">surname</td>
+                        </tr>
+                        <tr>
+                            <td>Возраст</td>
+                            <td th:text="*{age}">age</td>
+                        </tr>
+                        <tr>
+                            <td>Профессия</td>
+                            <td th:text="*{job.isPresent() ? job.get().name : 'Безработный'}">jobName</td>
+                        </tr>
+                        <tr th:if="*{job.isPresent()}">
+                            <td>Зарплата</td>
+                            <td th:text="*{job.get().salary}">salary
+                            </td>
+                        </tr>
+                        <tr sec:authorize="hasRole('ROLE_ADMIN')">
+                            <td colspan="2" style="border: none; text-align: center">
+                                <a href="/users" style="font-weight: bold; font-style: normal">На главную</a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
 </html>
