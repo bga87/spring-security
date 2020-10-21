@@ -1,7 +1,6 @@
 package org.example.controllers;
 
 import org.example.dto.UserDto;
-import org.example.model.Role;
 import org.example.model.User;
 import org.example.services.UsersService;
 import org.springframework.stereotype.Controller;
@@ -76,23 +75,29 @@ public class UsersController {
         return "redirect:/users/admin/list";
     }
 
-    @GetMapping(params = "action=showUpdateUserForm")
+    @GetMapping(value = "/admin", params = "action=showUpdateUserForm")
     public String showUpdateUserForm(@RequestParam("userId") long id, Model model) {
         UserDto userData = new UserDto(usersService.getUserById(id));
+        System.out.println("sending " + userData);
         model.addAttribute("userData", userData);
         return "updateUserForm";
     }
 
-    @PostMapping(params = "action=update")
+    @PostMapping(value = "/admin", params = "action=update")
     public String updateUser(@ModelAttribute("userData") UserDto userDto, SessionStatus sessionStatus) {
         usersService.update(userDto.getId(), usersService.createUserFromDto(userDto));
         sessionStatus.setComplete();
-        return "redirect:/users/list";
+        return "redirect:/users/admin/list";
     }
 
     @ExceptionHandler
     public String handleException(Exception ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         return "errorInfo";
+    }
+
+    @GetMapping("/authorizationFailure")
+    public String accessDenied() {
+        return "accessDenied";
     }
 }

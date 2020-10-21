@@ -4,8 +4,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 
 public class AppInit extends AbstractAnnotationConfigDispatcherServletInitializer {

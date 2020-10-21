@@ -12,9 +12,11 @@
                 padding: 5px;
                 padding-right: 30px;
                 border: 1px solid lightgray;
+                text-align: center;
             }
             .styled-table td:first-child {
                 font-style: italic;
+                text-align: left;
             }
         </style>
         <title>Данные пользователя</title>
@@ -52,9 +54,27 @@
                             <td th:text="*{job.get().salary}">salary
                             </td>
                         </tr>
+                        <tr>
+                            <td>Логин</td>
+                            <td th:text="*{securityDetails.login}">login</td>
+                        </tr>
+                        <tr>
+                            <td>Пароль</td>
+                            <td th:text="*{securityDetails.password}">password</td>
+                        </tr>
+                        <tr>
+                            <td>Права</td>
+                            <td>
+                                <ul>
+                                    <li th:each="role : *{securityDetails.roles}">
+                                        <span th:text="${role.displayName}">role_name</span>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
                         <tr sec:authorize="hasRole('ROLE_ADMIN')">
                             <td colspan="2" style="border: none; text-align: center">
-                                <a href="/users" style="font-weight: bold; font-style: normal">На главную</a>
+                                <a href="/users/admin" style="font-weight: bold; font-style: normal">На главную</a>
                             </td>
                         </tr>
                     </table>

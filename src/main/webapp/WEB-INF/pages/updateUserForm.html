@@ -5,7 +5,7 @@
     <title>Обновление данных пользователя</title>
 </head>
 <body>
-    <form th:method="POST" th:action="@{/users?action=update}" th:object="${userData}">
+    <form th:method="POST" th:action="@{/users/admin?action=update}" th:object="${userData}">
         <div>
             <label for="name">Имя</label>
             <input type="text" required="true" th:field="*{name}" id="name">
@@ -22,6 +22,19 @@
             <label for="salary">Зарплата</label>
             <input type="number" min="0" th:field="*{salary}" id="salary">
             <br>
+            <label for="login">Логин</label>
+            <input type="text" required="true" th:field="*{login}" id="login">
+            <br>
+            <label for="password">Зарплата</label>
+            <input type="text" required="true" th:field="*{password}" id="password">
+            <p>Права доступа (возможен множественный выбор):<br>
+                <select th:size="${application.availableRoles.size()}" multiple th:field="*{roles}">
+                    <option th:each="role : ${application.availableRoles}"
+                            th:value="${role.roleName}"
+                            th:text="${role.displayName}"
+                            th:selected="${userData.roles.contains(role.roleName)}"></option>
+                </select>
+            </p>
             <input type="submit" value="Обновить">
             <input type="reset" value="Сбросить изменения">
         </div>
