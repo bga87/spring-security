@@ -108,7 +108,8 @@ public class User implements UserDetails {
                 ((User) obj).name.equalsIgnoreCase(name) &&
                 ((User) obj).surname.equalsIgnoreCase(surname) &&
                 ((User) obj).age == age &&
-                Objects.equals(job, ((User) obj).job));
+                Objects.equals(job, ((User) obj).job) &&
+                Objects.equals(securityDetails, ((User) obj).securityDetails));
     }
 
     @Override
@@ -158,6 +159,7 @@ public class User implements UserDetails {
                 ", surname='" + surname + '\'' +
                 ", age=" + age +
                 ", job=" + job +
+                ", securityDetails=" + securityDetails +
                 '}';
     }
 }

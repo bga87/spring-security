@@ -34,24 +34,28 @@ public class UserDaoImpl implements UserDao {
         setRolesFromPersistentIfAlreadyExists(user, entityManager);
 
         long savedUserId = -1;
-        if (!userIsAlreadyPersisted(user, entityManager)) {
-            entityManager.persist(user);
-            savedUserId = user.getId();
+        if (userHasUniqueLogin(user, entityManager)) {
+            if (!userIsAlreadyPersisted(user, entityManager)) {
+                entityManager.persist(user);
+                savedUserId = user.getId();
+            } else {
+                throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
+            }
         } else {
-            throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
+            throw new IllegalStateException("Логин " + user.getSecurityDetails().getLogin() + " уже занят! Придумайте другой логин.");
         }
 
         return savedUserId;
     }
 
     private void setRolesFromPersistentIfAlreadyExists(User user, EntityManager entityManager) {
-        Set<Role> persistentRoles = user.getSecurityDetails().getRoles().stream()
+        Set<Role> correspondingPersistentRoles = user.getSecurityDetails().getRoles().stream()
                 .filter(role -> role.getId() != null)
                 .map(entityManager::merge)
                 .collect(Collectors.toSet());
 
-        if (persistentRoles.size() > 0) {
-            user.getSecurityDetails().setRoles(persistentRoles);
+        if (correspondingPersistentRoles.size() > 0) {
+            user.getSecurityDetails().setRoles(correspondingPersistentRoles);
         }
     }
 
@@ -63,6 +67,13 @@ public class UserDaoImpl implements UserDao {
                 .setParameter("age", user.getAge())
                 .getResultList()
                 .contains(user);
+    }
+
+    private boolean userHasUniqueLogin(User user, EntityManager entityManager) {
+        return entityManager.createQuery("SELECT u FROM User u " +
+                "WHERE u.securityDetails.login = :login", User.class)
+                .setParameter("login", user.getSecurityDetails().getLogin())
+                .getResultList().size() == 0;
     }
 
     private void setJobFromPersistentIfAlreadyExists(User user, EntityManager entityManager) {
@@ -142,6 +153,16 @@ public class UserDaoImpl implements UserDao {
             targetUser.setSurname(user.getSurname());
             targetUser.setAge(user.getAge());
 
+            if (!targetUser.getSecurityDetails().equals(user.getSecurityDetails())) {
+                // данные доступа поменялись
+                if (!loginsAreTheSame(targetUser.getSecurityDetails().getLogin(), user.getSecurityDetails().getLogin()) &&
+                        !userHasUniqueLogin(user, entityManager)) {
+                    throw new IllegalStateException("Логин " + user.getSecurityDetails().getLogin() + " уже занят! Придумайте другой логин.");
+                }
+                targetUser.setSecurityDetails(user.getSecurityDetails());
+                setRolesFromPersistentIfAlreadyExists(targetUser, entityManager);
+            }
+
             if (!jobsAreTheSame(targetUser.getJob(), user.getJob())) {
                 setJobFromPersistentIfAlreadyExists(user, entityManager);
                 Optional<Job> oldUserJob = targetUser.getJob();
@@ -151,6 +172,10 @@ public class UserDaoImpl implements UserDao {
         } else {
             throw new IllegalStateException("Пользователь " + user + " был сохранен в базе данных ранее");
         }
+    }
+
+    private boolean loginsAreTheSame(String originalLogin, String newLogin) {
+        return originalLogin.equals(newLogin);
     }
 
     private boolean jobsAreTheSame(Optional<Job> originalJobOpt, Optional<Job> newJobOpt) {

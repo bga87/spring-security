@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 
@@ -78,7 +79,6 @@ public class UsersController {
     @GetMapping(value = "/admin", params = "action=showUpdateUserForm")
     public String showUpdateUserForm(@RequestParam("userId") long id, Model model) {
         UserDto userData = new UserDto(usersService.getUserById(id));
-        System.out.println("sending " + userData);
         model.addAttribute("userData", userData);
         return "updateUserForm";
     }
@@ -91,8 +91,9 @@ public class UsersController {
     }
 
     @ExceptionHandler
-    public String handleException(Exception ex, Model model) {
+    public String handleException(Exception ex, Model model, HttpSession session) {
         model.addAttribute("errorMessage", ex.getMessage());
+        session.removeAttribute("newUserData");
         return "errorInfo";
     }
 

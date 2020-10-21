@@ -58,7 +58,7 @@ public class Job {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName().hashCode(), getSalary());
+        return Objects.hash(getName(), getSalary());
     }
 
     @Override

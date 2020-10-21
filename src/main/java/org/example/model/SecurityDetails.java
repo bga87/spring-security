@@ -3,10 +3,12 @@ package org.example.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Embeddable
@@ -17,7 +19,7 @@ public class SecurityDetails {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -56,5 +58,27 @@ public class SecurityDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login, password, roles);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || ((obj instanceof SecurityDetails) &&
+                ((SecurityDetails) obj).login.equalsIgnoreCase(login) &&
+                ((SecurityDetails) obj).password.equals(password) &&
+                ((SecurityDetails) obj).roles.equals(roles));
+    }
+
+    @Override
+    public String toString() {
+        return "SecurityDetails{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }
