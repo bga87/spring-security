@@ -2,23 +2,7 @@
 <html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
         <meta charset="UTF-8">
-        <style>
-            table.styled-table {
-                border-collapse: separate;
-                border: 2px solid black;
-                border-spacing: 4px;
-            }
-            .styled-table td {
-                padding: 5px;
-                padding-right: 30px;
-                border: 1px solid lightgray;
-                text-align: center;
-            }
-            .styled-table td:first-child {
-                font-style: italic;
-                text-align: left;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="/resources/styles/style.css" >
         <title>Данные пользователя</title>
     </head>
     <body>
@@ -32,7 +16,7 @@
             </tr>
             <tr>
                 <td>
-                    <table class="styled-table" th:object="${user}">
+                    <table class="user-info styled-table" th:object="${user}">
                         <tr>
                             <td>Имя</td>
                             <td th:text="*{name}">name</td>

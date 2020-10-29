@@ -29,4 +29,6 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
                 new CharacterEncodingFilter("utf8", false, true)
         };
     }
+
+
 }
